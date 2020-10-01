@@ -35,11 +35,13 @@ const dataObj = JSON.parse(data);
 //Server:
 
 const server = http.createServer((req, res) => {
-    const pathName = req.url;
+    
+    const { query, pathname } = url.parse(req.url, true);
+    console.log(url.parse(req.url, true));
 
     //Overview Page:
 
-    if (pathName === '/' || pathName === '/overview') {
+    if (pathname === '/' || pathname === '/overview') {
         res.writeHead(200, {
             'Content-type': 'text/html'
         })
@@ -52,12 +54,18 @@ const server = http.createServer((req, res) => {
 
     //Product Page:
 
-    } else if (pathName === '/product') {
-        res.end('These are the products');
+    } else if (pathname === '/product') {
+        res.writeHead(200, {
+            'Content-type': 'text/html'
+        });
+
+        const product = dataObj[query.id]; //Grabbing product based on id in array.
+        const output = replaceTemplate(tempProduct, product);
+        res.end(output);
 
     //API:
 
-    } else if (pathName === '/api') {
+    } else if (pathname === '/api') {
         //We need to tell browser that we're sending back JSON:
         res.writeHead(200, {
             'Content-type': 'application/json'
